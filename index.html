@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Investigator Toolboard</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<div id="cursor-dot"></div>
+
+<!-- TOOLBAR -->
+<div id="toolbar">
+  <span id="app-title">INVESTIG8R</span>
+  <div class="tb-sep"></div>
+
+  <!-- ADD group -->
+  <div class="tb-group">
+    <button class="tb-overflow-btn" id="addGroupBtn" title="Add content">
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      Add
+      <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor" style="margin-left:1px"><path d="M1 2l3 3 3-3"/></svg>
+    </button>
+    <div class="tb-dropdown" id="addGroupMenu">
+      <label class="tb-file-label" title="Add image/video/audio">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="3" width="12" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4 7l2-2 2 2 2-3" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+        Media
+        <input type="file" id="fileInput" accept="image/*,video/*,audio/*">
+      </label>
+      <label class="tb-file-label" title="Import PDF">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="1" width="8" height="12" rx="1"/><path d="M6 1v4h4"/><path d="M4 8h4M4 10h3"/></svg>
+        PDF
+        <input type="file" id="pdfInput" accept=".pdf,application/pdf">
+      </label>
+      <button class="tb-btn" id="addUrlBtn" title="Embed website">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="7" cy="7" r="5.5"/><path d="M7 1.5c-1.5 2-1.5 9 0 11M7 1.5c1.5 2 1.5 9 0 11M1.5 7h11"/></svg>
+        URL Embed
+      </button>
+      <button class="tb-btn" id="addTextBtn" title="Add text (T)">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor"><path d="M2 2h10v2H9v8H5V4H2z"/></svg>
+        Text Node
+      </button>
+    </div>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <!-- TOOLS group -->
+  <button class="tb-btn" id="selectBtn" title="Select (V)">
+    <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l9 5.5-5 1L5 13z"/></svg>
+    Select
+  </button>
+  <button class="tb-btn" id="addLineBtn" title="Draw edge (L)">
+    <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor"><line x1="2" y1="12" x2="12" y2="2" stroke="currentColor" stroke-width="1.6"/></svg>
+    Edge
+  </button>
+  <button class="tb-btn" id="addFrameBtn" title="Draw frame (F)">
+    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="12" height="12" rx="2"/><line x1="1" y1="4" x2="13" y2="4"/></svg>
+    Frame
+  </button>
+  <button class="tb-btn" id="addWaypointBtn" title="Drop waypoint (W)">
+    <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor"><circle cx="7" cy="5.5" r="3" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5.5" r="1.2"/><path d="M7 8.5c0 0-4 3-4 0" fill="none" stroke="currentColor" stroke-width="1.2"/><line x1="7" y1="8.5" x2="7" y2="13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    Pin
+  </button>
+
+  <div class="tb-sep"></div>
+
+  <!-- STYLE group -->
+  <div class="tb-group">
+    <button class="tb-overflow-btn" id="styleGroupBtn" title="Visual style options">
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="6" cy="6" r="0.8"/></svg>
+      Style
+      <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor" style="margin-left:1px"><path d="M1 2l3 3 3-3"/></svg>
+    </button>
+    <div class="tb-dropdown" id="styleGroupMenu">
+      <div style="display:flex;align-items:center;gap:7px;padding:3px 4px">
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);min-width:38px">Node</span>
+        <div class="tb-color-wrap"><input type="color" id="nodeColor" value="#e8c547"></div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);min-width:32px">Edge</span>
+        <div class="tb-color-wrap"><input type="color" id="edgeColor" value="#f07a3a"></div>
+      </div>
+      <div class="tb-sep"></div>
+      <div class="tb-range-group" style="padding:3px 4px">
+        <label>Opacity</label>
+        <input type="range" class="tb-range" id="opacityRange" min="0" max="1" step="0.05" value="1">
+        <span class="tb-range-val" id="opacityVal">1.0</span>
+      </div>
+      <div class="tb-sep"></div>
+      <select class="tb-select" id="lineStyleSel"><option value="solid">Solid line</option><option value="dashed">Dashed</option><option value="dotted">Dotted</option></select>
+      <select class="tb-select" id="arrowStyleSel" style="margin-top:4px"><option value="none">No arrow</option><option value="open">Open arrow</option><option value="filled" selected>Filled arrow</option><option value="double">Double arrow</option></select>
+    </div>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <!-- ZOOM group -->
+  <div class="tb-group">
+    <button class="tb-overflow-btn" id="zoomGroupBtn" title="Zoom options">
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="5" cy="5" r="3.5"/><line x1="7.5" y1="7.5" x2="11" y2="11"/><line x1="3.5" y1="5" x2="6.5" y2="5"/><line x1="5" y1="3.5" x2="5" y2="6.5"/></svg>
+      Zoom
+      <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor" style="margin-left:1px"><path d="M1 2l3 3 3-3"/></svg>
+    </button>
+    <div class="tb-dropdown" id="zoomGroupMenu">
+      <button class="tb-btn" id="fitBtn" title="Fit all nodes (Ctrl+F)">Fit All  <span style="color:var(--text3);font-size:9px">Ctrl+F</span></button>
+      <button class="tb-btn" id="fitSelBtn" title="Fit selected nodes">Fit Selection</button>
+      <button class="tb-btn" id="zoomResetBtn" title="Reset zoom (Ctrl+0)">Reset  <span style="color:var(--text3);font-size:9px">Ctrl+0</span></button>
+      <button class="tb-btn" id="zoomInBtn" title="Zoom in">Zoom In  <span style="color:var(--text3);font-size:9px">Ctrl++</span></button>
+      <button class="tb-btn" id="zoomOutBtn" title="Zoom out">Zoom Out  <span style="color:var(--text3);font-size:9px">Ctrl+-</span></button>
+    </div>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <!-- HISTORY group -->
+  <button class="tb-btn" id="undoBtn" title="Undo (Ctrl+Z)">&#8630; Undo</button>
+  <button class="tb-btn" id="redoBtn" title="Redo (Ctrl+Y)">Redo &#8631;</button>
+  <button class="tb-btn danger" id="deleteBtn" title="Delete (Del)">&#x2715;</button>
+
+  <div class="tb-sep"></div>
+
+  <!-- VIEW group -->
+  <button class="tb-btn" id="presentBtn" title="Presentation mode (Shift+P)">&#9658; Present</button>
+  <button class="tb-btn" id="wpManagerBtn" title="Manage waypoints">Waypoints</button>
+
+  <div class="tb-sep"></div>
+
+  <!-- FILE group -->
+  <div class="tb-group">
+    <button class="tb-overflow-btn" id="fileGroupBtn" title="File operations">
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1" y="1" width="8" height="10" rx="1"/><path d="M5 1v3h4"/><path d="M3 7h5M3 9h3"/></svg>
+      File
+      <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor" style="margin-left:1px"><path d="M1 2l3 3 3-3"/></svg>
+    </button>
+    <div class="tb-dropdown" id="fileGroupMenu" style="left:auto;right:0">
+      <button class="tb-btn" id="saveBtn" title="Save board (Ctrl+S)">Save Board</button>
+      <button class="tb-btn" id="loadBtn" title="Load saved board">Load Board</button>
+      <button class="tb-btn" id="templatesBtn" title="Templates">Templates</button>
+      <div class="tb-sep"></div>
+      <select class="tb-select" id="exportFmt"><option value="png">Export PNG</option><option value="json">Export JSON</option><option value="jizz">Export .jizz</option><option value="html">Export .html (standalone)</option></select>
+      <button class="tb-btn" id="exportBtn" style="margin-top:4px">Export</button>
+      <div class="tb-sep"></div>
+      <label class="tb-file-label" title="Open a .jizz board file" style="border-color:var(--accent);color:var(--accent)">Open .jizz<input type="file" id="openJizzInput" accept=".jizz"></label>
+    </div>
+  </div>
+
+  <button class="tb-btn" id="helpBtn" title="Keyboard shortcuts (?)">?</button>
+</div>
+
+<!-- WORKSPACE -->
+<div id="workspace">
+  <canvas id="main-canvas"></canvas>
+  <button id="panel-toggle" title="Toggle panel (P)">▶</button>
+  <div id="side-panel">
+    <div class="panel-section">
+      <div class="panel-hdr">Layers <button id="addLayerBtn">+</button></div>
+      <div id="layers-list"></div>
+    </div>
+    <div class="panel-section">
+      <div class="panel-hdr">Properties</div>
+    </div>
+    <div id="props-inner"></div>
+  </div>
+  <canvas id="minimap" width="160" height="110"></canvas>
+  <div id="media-bar">
+    <span class="mb-label" id="mb-label">—</span>
+    <button id="mb-pp">&#9654;</button>
+    <span style="color:var(--text3)">VOL</span>
+    <input type="range" id="media-vol" min="0" max="1" step="0.05" value="1">
+    <span style="color:var(--text3)">SPD</span>
+    <input type="range" id="media-spd" min="0.25" max="3" step="0.25" value="1">
+    <span id="media-spdval">1x</span>
+    <button id="mb-close">x</button>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div id="status-bar">
+  <span>ZOOM <span id="st-zoom">100%</span></span>
+  <span>X <span id="st-x">0</span></span>
+  <span>Y <span id="st-y">0</span></span>
+  <span>NODES <span id="st-nodes">0</span></span>
+  <span>LAYER <span id="st-layer">Layer 1</span></span>
+  <span>SNAP <span id="st-snap">OFF</span></span>
+  <span id="st-mode">SELECT</span>
+</div>
+
+<!-- CONTEXT MENU -->
+<div id="ctx-menu">
+  <div class="ctx-item" data-action="front">Bring to Front <span class="ctx-kbd">]</span></div>
+  <div class="ctx-item" data-action="back">Send to Back <span class="ctx-kbd">[</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" id="ctx-edit-text" data-action="edit-text">Edit Text <span class="ctx-kbd">F2</span></div>
+  <div class="ctx-item" data-action="edit-label">Edit Label</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" data-action="add-waypoint">Add as Waypoint</div>
+  <div class="ctx-item" data-action="save-template">Save Board as Template…</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" data-action="duplicate">Duplicate <span class="ctx-kbd">Ctrl+D</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item danger" data-action="delete">Delete <span class="ctx-kbd">Del</span></div>
+</div>
+
+<!-- TEXT EDITOR MODAL -->
+<div class="modal-overlay" id="text-editor-overlay">
+  <div class="modal-box">
+    <div class="modal-title" id="text-editor-title">ADD TEXT</div>
+    <label id="text-editor-label">CONTENT</label>
+    <textarea id="text-editor-input" rows="3" spellcheck="false"></textarea>
+    <div class="text-font-row">
+      <label>Font</label>
+      <select id="text-font-sel">
+        <option value="IBM Plex Mono">IBM Plex Mono</option>
+        <option value="IBM Plex Sans">IBM Plex Sans</option>
+        <option value="Space Mono">Space Mono</option>
+        <option value="Crimson Pro">Crimson Pro</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Arial">Arial</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Impact">Impact</option>
+      </select>
+      <label>Size</label>
+      <select id="text-size-sel">
+        <option value="10">10</option><option value="12">12</option><option value="13" selected>13</option><option value="14">14</option>
+        <option value="16">16</option><option value="20">20</option><option value="24">24</option>
+        <option value="32">32</option><option value="48">48</option>
+      </select>
+    </div>
+    <div id="text-font-preview">Preview text here</div>
+    <div class="modal-btns">
+      <button id="text-editor-cancel">Cancel</button>
+      <button class="primary" id="text-editor-ok">Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- KBD HELP -->
+<div class="modal-overlay" id="kbd-help">
+  <div class="modal-box">
+    <div class="modal-title">// KEYBOARD SHORTCUTS</div>
+    <div class="kbd-grid">
+      <div class="kbd-row"><span class="kbd-desc">Select</span><span class="kbd-key">V</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Draw edge</span><span class="kbd-key">L</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Add text</span><span class="kbd-key">T</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Draw frame</span><span class="kbd-key">F</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Pin waypoint</span><span class="kbd-key">W</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Delete</span><span class="kbd-key">Del</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Undo</span><span class="kbd-key">Ctrl+Z</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Redo</span><span class="kbd-key">Ctrl+Y</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Save</span><span class="kbd-key">Ctrl+S</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Duplicate</span><span class="kbd-key">Ctrl+D</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Select all</span><span class="kbd-key">Ctrl+A</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Bring forward</span><span class="kbd-key">]</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Send back</span><span class="kbd-key">[</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Snap grid</span><span class="kbd-key">G</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Zoom in/out</span><span class="kbd-key">Ctrl +/-</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Fit all nodes</span><span class="kbd-key">Ctrl+F</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Fit selection</span><span class="kbd-key">Ctrl+Shift+F</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Reset view</span><span class="kbd-key">Ctrl+0</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Edit text</span><span class="kbd-key">F2</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Pan canvas</span><span class="kbd-key">Space+drag</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Cancel</span><span class="kbd-key">Esc</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Present mode</span><span class="kbd-key">Shift+P</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Next waypoint</span><span class="kbd-key">→</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Prev waypoint</span><span class="kbd-key">←</span></div>
+      <div class="kbd-row"><span class="kbd-desc">This help</span><span class="kbd-key">?</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Toggle panel</span><span class="kbd-key">P</span></div>
+    </div>
+    <div class="modal-btns"><button class="primary" id="kbd-close">Close</button></div>
+  </div>
+</div>
+
+<!-- TUTORIAL OVERLAY -->
+<div id="tutorial-overlay">
+  <div id="tut-card">
+    <button id="tut-skip">Skip intro</button>
+    <div id="tut-art">
+      <canvas id="tut-canvas" width="520" height="200"></canvas>
+    </div>
+    <div id="tut-body">
+      <div id="tut-step-indicator"></div>
+      <div id="tut-title"></div>
+      <div id="tut-desc"></div>
+      <div id="tut-hint"></div>
+      <div id="tut-nav">
+        <span id="tut-progress"></span>
+        <button id="tut-prev">Back</button>
+        <button class="primary" id="tut-next">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- PRESENTER BAR -->
+<div id="present-bar">
+  <button class="pb-btn" id="pb-prev" title="Previous (←)">◀</button>
+  <span id="pb-counter">1 / 1</span>
+  <button class="pb-btn" id="pb-next" title="Next (→)">▶</button>
+  <div style="width:1px;height:20px;background:var(--border);margin:0 4px"></div>
+  <span id="pb-title">—</span>
+  <div style="width:1px;height:20px;background:var(--border);margin:0 4px"></div>
+  <button class="pb-btn" id="pb-spotlight" title="Toggle spotlight" style="font-size:11px;">SPOT</button>
+  <button class="pb-btn exit" id="pb-exit" title="Exit presentation (Esc)">x</button>
+</div>
+
+<!-- SPEAKER NOTE -->
+<div id="present-note">
+  <h4 id="pn-title">NOTE</h4>
+  <p id="pn-text"></p>
+</div>
+
+<!-- SPOTLIGHT OVERLAY (canvas element for vignette) -->
+<canvas id="spotlight-overlay"></canvas>
+
+<!-- EDGE LABEL INLINE INPUT -->
+<input id="edge-label-input" type="text" placeholder="Label…" maxlength="80">
+
+<!-- WAYPOINTS MANAGER MODAL -->
+<div id="wp-modal">
+  <div class="modal-box">
+    <div class="modal-title">WAYPOINTS — PRESENTATION TOUR</div>
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-bottom:8px;">
+      Click on the canvas (in waypoint mode) to drop a pin. Drag to reorder. Double-click a row to edit title &amp; notes.
+    </div>
+    <div id="wp-list"></div>
+    <div id="wp-edit-form">
+      <label>Title</label>
+      <input id="wp-edit-title" type="text" placeholder="Slide title…">
+      <label style="margin-top:8px;display:block;">Speaker note</label>
+      <textarea id="wp-edit-note" placeholder="Notes visible during presentation…"></textarea>
+      <div class="modal-btns" style="margin-top:8px;">
+        <button id="wp-edit-cancel">Cancel</button>
+        <button class="primary" id="wp-edit-save">Save</button>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button id="wp-close">Close</button>
+      <button class="primary" id="wp-record-btn">+ Add Waypoint at Current View</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<!-- INLINE RENAME MODAL (replaces all prompt() calls) -->
+<div class="modal-overlay" id="rename-modal">
+  <div class="modal-box" style="width:340px;">
+    <div class="modal-title" id="rename-modal-title">RENAME</div>
+    <input type="text" id="rename-modal-input" class="prop-input" style="width:100%;margin-top:8px;padding:8px 10px;font-size:13px;" autocomplete="off" spellcheck="false">
+    <div class="modal-btns" style="margin-top:12px;">
+      <button id="rename-modal-cancel">Cancel</button>
+      <button class="primary" id="rename-modal-ok">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- TEMPLATE MODAL -->
+<div id="template-modal">
+  <div class="modal-box">
+    <div class="modal-title">BOARD TEMPLATES</div>
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-bottom:8px;">
+      Load a template to start a new board layout. Built-in templates are marked in blue. Save your current board as a template to reuse it later or share it.
+    </div>
+
+    <!-- Save current board as template -->
+    <div class="tpl-section-hdr">
+      <span>Save Current Board as Template</span>
+    </div>
+    <input id="tpl-save-name" type="text" placeholder="Template name…" maxlength="48" spellcheck="false">
+    <textarea id="tpl-save-desc" placeholder="Short description (optional)…" maxlength="120"></textarea>
+    <div style="display:flex;gap:7px;margin-top:7px;">
+      <button class="tb-btn primary" id="tplSaveBtn" style="background:var(--accent);color:#000;font-weight:700;border-color:var(--accent);flex:1">Save as Template</button>
+      <button class="tb-btn" id="tplExportBtn" title="Export selected template as .tpl.json">Export .json</button>
+      <label class="tb-file-label" title="Import a .tpl.json template file">Import .json<input type="file" id="tplImportInput" accept=".json,.tpl.json"></label>
+    </div>
+
+    <div class="tpl-section-hdr" style="margin-top:14px;">
+      <span>Available Templates</span>
+      <span id="tpl-count" style="font-size:9px;color:var(--text3)"></span>
+    </div>
+    <div id="template-list"></div>
+
+    <div class="modal-btns">
+      <button id="tpl-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- PDF Import Modal -->
+<div id="pdf-modal">
+  <div class="modal-box">
+    <div class="modal-title">IMPORT PDF</div>
+    <div style="padding:10px 0 6px;font-family:var(--font-mono);font-size:10px;color:var(--text3)" id="pdf-modal-info">Loading pages…</div>
+    <div id="pdf-preview-strip"></div>
+    <div style="padding:10px 0 4px;font-family:var(--font-mono);font-size:10px;font-weight:700;color:var(--text2)">IMPORT MODE</div>
+    <div id="pdf-import-opts">
+      <button class="pdf-opt-btn active" data-mode="viewer">Live PDF Viewer</button>
+      <button class="pdf-opt-btn" data-mode="selected">Selected Pages as Images</button>
+      <button class="pdf-opt-btn" data-mode="range">Page Range as Images</button>
+      <button class="pdf-opt-btn" data-mode="all">All Pages as Images</button>
+    </div>
+    <div id="pdf-page-range-row" style="display:none">
+      Pages <input type="number" id="pdf-range-from" min="1" value="1"> to <input type="number" id="pdf-range-to" min="1" value="1">
+    </div>
+    <div id="pdf-viewer-info">
+      <b style="color:var(--accent)">Live PDF Viewer</b> embeds an interactive viewer node on the canvas.<br>
+      Use prev/next buttons to flip pages. Click to select and move it.
+    </div>
+    <div class="modal-btns" style="margin-top:14px">
+      <button id="pdf-cancel">Cancel</button>
+      <button class="primary" id="pdf-ok">Add to Board</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- URL / Website Embed Modal -->
+<div id="url-modal">
+  <div class="modal-box">
+    <div class="modal-title">EMBED WEBSITE OR URL</div>
+    <input type="url" id="url-input" placeholder="https://example.com" autocomplete="off" spellcheck="false">
+    <div class="url-presets">
+      <button class="url-preset-btn" data-url="https://www.openstreetmap.org/export/embed.html?bbox=-0.1,51.4,-0.05,51.55&amp;layer=mapnik">OpenStreetMap</button>
+      <button class="url-preset-btn" data-url="https://www.wikipedia.org">Wikipedia</button>
+      <button class="url-preset-btn" data-url="https://time.is">World Clock</button>
+      <button class="url-preset-btn" data-url="https://www.bbc.com/news">BBC News</button>
+    </div>
+    <div id="pdf-progress"></div>
+    <div class="modal-btns" style="margin-top:14px">
+      <button id="url-cancel">Cancel</button>
+      <button class="primary" id="url-ok">Embed</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- JS modules — load in dependency order, all globals on window -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>if(typeof pdfjsLib!=='undefined')pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+<script src="js/core.js"></script>
+<script src="js/render.js"></script>
+<script src="js/hitTest.js"></script>
+<script src="js/interact.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/io.js"></script>
+<script src="js/util.js"></script>
+<script src="js/overlay.js"></script>
+<script src="js/present.js"></script>
+</body>
+</html>

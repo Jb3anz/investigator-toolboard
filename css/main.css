@@ -1,0 +1,739 @@
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg:#0d0f14;--surface:#13161e;--surface2:#1a1d28;--border:#252836;--border2:#363a4d;
+  --accent:#e8c547;--accent2:#f07a3a;--danger:#e05252;--success:#4caf7d;--blue:#5b8dee;
+  --text:#d8dce8;--text2:#8890a8;--text3:#555d72;
+  --font-mono:'IBM Plex Mono',monospace;--font-sans:'IBM Plex Sans',sans-serif;
+  --toolbar-h:52px;--status-h:28px;--panel-w:210px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font-sans);background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+
+/* TOOLBAR */
+#toolbar{height:var(--toolbar-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:2px;padding:0 8px;flex-shrink:0;user-select:none;z-index:100;position:relative;overflow:visible;flex-wrap:nowrap}
+.tb-group{display:flex;align-items:center;gap:2px;flex-shrink:0;position:relative}
+.tb-overflow-btn{height:30px;padding:0 8px;background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text2);font-family:var(--font-mono);font-size:11px;cursor:pointer;white-space:nowrap;transition:all .14s;display:flex;align-items:center;gap:4px;flex-shrink:0}
+.tb-overflow-btn:hover,.tb-overflow-btn.active{background:var(--border2);color:var(--text)}
+.tb-dropdown{position:absolute;top:calc(var(--toolbar-h) - 4px);background:var(--surface);border:1px solid var(--border2);border-radius:7px;padding:6px;display:none;flex-direction:column;gap:4px;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.55);min-width:190px;left:0}
+.tb-dropdown.open{display:flex}
+.tb-dropdown .tb-btn,.tb-dropdown .tb-file-label{width:100%;justify-content:flex-start;box-sizing:border-box}
+.tb-dropdown .tb-sep{width:100%;height:1px;background:var(--border);margin:2px 0}
+.tb-dropdown .tb-range-group{padding:2px 4px}
+.tb-dropdown .tb-color-wrap{width:24px;height:24px}
+.tb-dropdown select.tb-select{width:100%}
+.tb-sep{width:1px;height:26px;background:var(--border);margin:0 5px;flex-shrink:0}
+.tb-btn{height:30px;padding:0 10px;background:transparent;border:1px solid transparent;border-radius:5px;color:var(--text2);font-family:var(--font-mono);font-size:11px;cursor:pointer;white-space:nowrap;transition:all .14s;display:flex;align-items:center;gap:5px;flex-shrink:0}
+.tb-btn:hover{background:var(--surface2);border-color:var(--border);color:var(--text)}
+.tb-btn.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700}
+.tb-btn.danger:hover{background:rgba(224,82,82,.15);border-color:var(--danger);color:var(--danger)}
+.tb-file-label{height:30px;padding:0 10px;background:transparent;border:1px solid var(--border2);border-radius:5px;color:var(--text2);font-family:var(--font-mono);font-size:11px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .14s;flex-shrink:0}
+.tb-file-label:hover{background:var(--surface2);color:var(--text)}
+.tb-file-label input{display:none}
+.tb-select{height:30px;padding:0 7px;background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:var(--font-mono);font-size:11px;cursor:pointer;outline:none}
+.tb-select:focus{border-color:var(--accent)}
+.tb-color-wrap{position:relative;width:30px;height:30px;flex-shrink:0}
+.tb-color-wrap input[type=color]{width:100%;height:100%;border:1px solid var(--border);border-radius:5px;padding:3px;background:var(--surface2);cursor:pointer}
+.tb-range-group{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.tb-range-group label{font-family:var(--font-mono);font-size:10px;color:var(--text3)}
+.tb-range{width:65px;accent-color:var(--accent);cursor:pointer}
+.tb-range-val{font-family:var(--font-mono);font-size:10px;color:var(--text2);min-width:24px}
+#app-title{font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.05em;flex-shrink:0;margin-right:4px}
+
+/* WORKSPACE */
+#workspace{flex:1;position:relative;overflow:hidden;display:flex;isolation:isolate}
+#main-canvas{display:block;position:absolute;top:0;left:0}
+
+/* SIDE PANEL */
+#side-panel{position:absolute;right:0;top:0;bottom:0;width:var(--panel-w);background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;z-index:20;transition:width .22s cubic-bezier(.4,0,.2,1)}
+#side-panel.collapsed{width:0;overflow:hidden;}
+#panel-toggle{position:absolute;right:var(--panel-w);top:50%;transform:translateY(-50%);width:18px;height:48px;background:var(--surface);border:1px solid var(--border);border-right:none;border-radius:6px 0 0 6px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:25;color:var(--text3);font-size:11px;transition:right .22s cubic-bezier(.4,0,.2,1);user-select:none;}
+#panel-toggle:hover{color:var(--accent);background:var(--surface2);}
+#side-panel.collapsed~#panel-toggle,
+body.panel-collapsed #panel-toggle{right:0;}
+.panel-section{border-bottom:1px solid var(--border);flex-shrink:0}
+.panel-hdr{padding:8px 12px;font-family:var(--font-mono);font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between}
+.panel-hdr button{background:none;border:none;color:var(--accent);cursor:pointer;font-size:16px;line-height:1;padding:0 2px;font-family:var(--font-mono)}
+#layers-list{overflow-y:auto;max-height:160px}
+.layer-item{display:flex;align-items:center;gap:7px;padding:7px 12px;border-bottom:1px solid rgba(37,40,54,.6);cursor:pointer;transition:background .12s;font-family:var(--font-mono);font-size:11px}
+.layer-item:hover{background:var(--surface2)}
+.layer-item.active{background:rgba(232,197,71,.07);border-left:2px solid var(--accent)}
+.layer-item .lname{flex:1;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.layer-item .lvis{cursor:pointer;font-size:13px;opacity:.7;transition:opacity .12s}
+.layer-item .lvis:hover{opacity:1}
+.layer-item.hidden-layer .lname{opacity:.4}
+#props-inner{padding:6px 0;overflow-y:auto;flex:1}
+.prop-row{display:flex;align-items:center;gap:6px;padding:4px 12px;border-bottom:1px solid rgba(37,40,54,.4)}
+.prop-label{font-family:var(--font-mono);font-size:10px;color:var(--text3);min-width:52px;flex-shrink:0}
+.prop-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:3px 6px;font-family:var(--font-mono);font-size:11px;outline:none;min-width:0}
+.prop-input:focus{border-color:var(--accent)}
+.prop-input[type=color]{padding:2px;cursor:pointer}
+
+/* MINIMAP */
+#minimap{position:absolute;bottom:36px;left:12px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);z-index:20;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+
+/* STATUS BAR */
+#status-bar{height:var(--status-h);background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:18px;flex-shrink:0;font-family:var(--font-mono);font-size:10px;color:var(--text3);user-select:none;z-index:100;position:relative}
+.status-item span{color:var(--text2)}
+#st-mode{margin-left:auto;color:var(--accent);font-weight:700}
+
+/* CONTEXT MENU */
+#ctx-menu{position:fixed;background:var(--surface);border:1px solid var(--border2);border-radius:7px;overflow:hidden;z-index:1000;box-shadow:0 8px 24px rgba(0,0,0,.55);min-width:165px;display:none}
+#ctx-menu.visible{display:block}
+.ctx-item{padding:8px 14px;font-family:var(--font-mono);font-size:11px;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:9px;transition:background .1s}
+.ctx-item:hover{background:var(--surface2)}
+.ctx-item.danger:hover{background:rgba(224,82,82,.15);color:var(--danger)}
+.ctx-sep{height:1px;background:var(--border);margin:3px 0}
+.ctx-kbd{margin-left:auto;color:var(--text3);font-size:9px}
+
+/* TOAST */
+#toast-container{position:fixed;bottom:46px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px;z-index:3000;pointer-events:none}
+.toast{background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:7px 15px;font-family:var(--font-mono);font-size:11px;color:var(--text);animation:toast-in .18s ease;transition:opacity .3s}
+.toast.success{border-color:var(--success);color:var(--success)}
+.toast.error{border-color:var(--danger);color:var(--danger)}
+@keyframes toast-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;display:none;align-items:center;justify-content:center}
+.modal-overlay.visible{display:flex}
+.modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:22px 26px;box-shadow:0 16px 48px rgba(0,0,0,.6)}
+.modal-title{font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--accent);margin-bottom:14px}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.modal-btns button{padding:7px 16px;border-radius:5px;font-family:var(--font-mono);font-size:11px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text);transition:all .14s}
+.modal-btns button.primary{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700}
+.modal-btns button:hover:not(.primary){background:var(--border2)}
+
+/* TEXT EDITOR */
+#text-editor-overlay .modal-box{width:420px}
+#text-editor-label{font-family:var(--font-mono);font-size:10px;color:var(--text3);display:block;margin-bottom:7px}
+#text-editor-input{width:100%;min-height:80px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:12px;padding:10px;resize:vertical;outline:none}
+#text-editor-input:focus{border-color:var(--accent)}
+.text-font-row{display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap}
+.text-font-row label{font-family:var(--font-mono);font-size:10px;color:var(--text3)}
+#text-font-sel,#text-size-sel{background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--font-mono);font-size:11px;padding:4px 6px;outline:none;cursor:pointer}
+#text-font-sel:focus,#text-size-sel:focus{border-color:var(--accent)}
+#text-font-preview{margin-top:8px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;font-size:14px;color:var(--text);min-height:36px;word-break:break-word}
+
+/* KBD HELP */
+#kbd-help .modal-box{width:460px;max-height:80vh;overflow-y:auto}
+.kbd-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px}
+.kbd-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid rgba(37,40,54,.5)}
+.kbd-desc{font-family:var(--font-sans);font-size:11px;color:var(--text2)}
+.kbd-key{font-family:var(--font-mono);font-size:9px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:2px 5px;white-space:nowrap}
+
+/* MEDIA BAR */
+#media-bar{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border2);border-radius:8px;display:none;align-items:center;gap:9px;padding:6px 13px;z-index:30;font-family:var(--font-mono);font-size:10px;box-shadow:0 4px 16px rgba(0,0,0,.45);white-space:nowrap}
+#media-bar.visible{display:flex}
+#media-bar button{background:none;border:1px solid var(--border);border-radius:4px;color:var(--text);cursor:pointer;padding:3px 8px;font-size:12px;transition:all .12s}
+/* URL / iframe node */
+.iframe-node-wrap{position:absolute;overflow:hidden;pointer-events:all;border:2px solid var(--border2);border-radius:4px;background:#fff;}
+.iframe-node-wrap iframe{width:100%;height:100%;border:none;display:block;}
+.iframe-node-overlay{position:absolute;inset:0;background:transparent;cursor:move;}
+.iframe-node-overlay.editing{display:none;}
+/* URL input modal */
+#url-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:800;display:none;align-items:center;justify-content:center;}
+#url-modal.visible{display:flex;}
+#url-modal .modal-box{width:480px;}
+#url-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:10px 12px;font-family:var(--font-mono);font-size:13px;outline:none;margin:14px 20px 0;display:block;}
+#url-input:focus{border-color:var(--accent)}
+.url-presets{display:flex;gap:7px;flex-wrap:wrap;padding:10px 20px 0;}
+.url-preset-btn{padding:4px 10px;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;color:var(--text2);font-family:var(--font-mono);font-size:10px;cursor:pointer;transition:all .12s;}
+.url-preset-btn:hover{border-color:var(--accent);color:var(--accent);}
+#pdf-progress{margin:8px 20px 0;font-family:var(--font-mono);font-size:11px;color:var(--accent);display:none;}
+#media-bar button:hover{border-color:var(--accent);color:var(--accent)}
+#media-bar .mb-label{color:var(--text3);font-size:9px;max-width:100px;overflow:hidden;text-overflow:ellipsis}
+#media-vol,#media-spd{width:65px;accent-color:var(--accent)}
+#media-spdval{color:var(--text2);min-width:24px}
+
+/* TEMPLATES */
+#template-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:800;display:none;align-items:center;justify-content:center;}
+#template-modal.visible{display:flex;}
+#template-modal .modal-box{width:580px;max-height:80vh;display:flex;flex-direction:column;}
+#template-list{overflow-y:auto;flex:1;margin:10px 0;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.tpl-card{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:10px 12px;cursor:pointer;transition:border-color .14s;position:relative;}
+.tpl-card:hover{border-color:var(--accent);}
+.tpl-card.builtin{border-left:3px solid var(--blue);}
+.tpl-card.user{border-left:3px solid var(--accent);}
+.tpl-card .tpl-name{font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.tpl-card .tpl-desc{font-family:var(--font-sans);font-size:10px;color:var(--text3);line-height:1.5;}
+.tpl-card .tpl-meta{font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-top:5px;}
+.tpl-card .tpl-del{position:absolute;top:6px;right:6px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:0 3px;line-height:1;}
+.tpl-card .tpl-del:hover{color:var(--danger);}
+.tpl-card .tpl-btns{display:flex;gap:5px;margin-top:8px;}
+.tpl-card .tpl-btns button{flex:1;padding:4px 0;border-radius:4px;font-family:var(--font-mono);font-size:10px;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);transition:all .12s;}
+.tpl-card .tpl-btns button:hover{border-color:var(--accent);color:var(--accent);}
+.tpl-card .tpl-btns button.primary{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700;}
+.tpl-preview{width:100%;height:80px;border-radius:4px;background:var(--bg);margin-bottom:6px;overflow:hidden;}
+#tpl-save-row{display:flex;gap:7px;margin-top:8px;align-items:center;}
+#tpl-save-name{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:var(--font-mono);font-size:11px;padding:6px 9px;outline:none;}
+#tpl-save-name:focus{border-color:var(--accent);}
+#tpl-save-desc{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:var(--font-mono);font-size:11px;padding:6px 9px;outline:none;margin-top:5px;resize:none;height:44px;}
+#tpl-save-desc:focus{border-color:var(--accent);}
+.tpl-section-hdr{font-family:var(--font-mono);font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;padding:4px 0 6px;border-bottom:1px solid var(--border);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+#tutorial-overlay{position:fixed;inset:0;background:rgba(5,7,12,.92);z-index:2000;display:flex;align-items:center;justify-content:center;font-family:var(--font-sans)}
+#tutorial-overlay.hidden{display:none}
+#tut-card{background:var(--surface);border:1px solid var(--border2);border-radius:14px;width:520px;max-width:95vw;box-shadow:0 24px 64px rgba(0,0,0,.8);overflow:hidden;position:relative}
+#tut-skip{position:absolute;top:14px;right:14px;background:none;border:1px solid var(--border);border-radius:4px;color:var(--text3);font-family:var(--font-mono);font-size:10px;cursor:pointer;padding:3px 8px;transition:all .14s}
+#tut-skip:hover{border-color:var(--text3);color:var(--text)}
+#tut-art{height:200px;background:var(--surface2);display:flex;align-items:center;justify-content:center;overflow:hidden}
+#tut-body{padding:22px 26px 20px}
+#tut-step-indicator{display:flex;gap:6px;margin-bottom:14px}
+.tut-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);transition:background .2s}
+.tut-dot.active{background:var(--accent)}
+#tut-title{font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--accent);margin-bottom:8px}
+#tut-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+#tut-hint{font-family:var(--font-mono);font-size:10px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;margin-bottom:16px}
+#tut-nav{display:flex;gap:10px;justify-content:flex-end;align-items:center}
+#tut-nav button{padding:8px 18px;border-radius:6px;font-family:var(--font-mono);font-size:11px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text);transition:all .14s}
+#tut-nav button.primary{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700}
+#tut-nav button:hover:not(.primary){background:var(--border2)}
+#tut-progress{font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-right:auto}
+
+/* CURSOR */
+#cursor-dot{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--accent);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference;transition:transform .04s}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+/* PDF Import Modal */
+#pdf-modal{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:900;display:none;align-items:center;justify-content:center;}
+#pdf-modal.visible{display:flex;}
+#pdf-modal .modal-box{width:560px;max-height:90vh;overflow-y:auto;}
+#pdf-preview-strip{display:flex;gap:8px;overflow-x:auto;padding:12px 0;min-height:140px;align-items:flex-start;flex-wrap:nowrap;}
+.pdf-thumb{position:relative;flex-shrink:0;cursor:pointer;border:2px solid var(--border2);border-radius:4px;overflow:hidden;transition:border-color .14s;}
+.pdf-thumb.selected{border-color:var(--accent);}
+.pdf-thumb canvas{display:block;}
+.pdf-thumb .pg-num{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-family:var(--font-mono);font-size:9px;color:#fff;background:rgba(0,0,0,.6);padding:1px 0;}
+.pdf-thumb .pg-check{position:absolute;top:4px;right:4px;width:14px;height:14px;border-radius:50%;background:var(--accent);color:#000;font-size:9px;display:none;align-items:center;justify-content:center;font-weight:700;}
+.pdf-thumb.selected .pg-check{display:flex;}
+#pdf-import-opts{display:flex;gap:8px;padding:0 0 10px;flex-wrap:wrap;}
+.pdf-opt-btn{padding:6px 13px;border:1px solid var(--border2);border-radius:5px;background:var(--surface2);color:var(--text2);font-family:var(--font-mono);font-size:10px;cursor:pointer;transition:all .14s;}
+.pdf-opt-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(232,197,71,.08);}
+#pdf-page-range-row{display:flex;gap:8px;align-items:center;padding:6px 0 2px;font-family:var(--font-mono);font-size:11px;color:var(--text2);}
+#pdf-page-range-row input{width:55px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:4px 7px;font-family:var(--font-mono);font-size:11px;outline:none;}
+#pdf-page-range-row input:focus{border-color:var(--accent);}
+#pdf-viewer-info{font-family:var(--font-mono);font-size:10px;color:var(--text3);padding:6px 0 0;line-height:1.6;}
+/* PDF viewer node overlay */
+.pdf-viewer-wrap{position:absolute;left:0;top:0;overflow:hidden;border:2px solid var(--border2);border-radius:4px;background:#1a1a2e;display:flex;flex-direction:column;will-change:transform;min-width:60px;min-height:60px;}
+.pdf-viewer-toolbar{display:flex;align-items:center;gap:6px;padding:4px 8px;background:rgba(13,15,20,.9);border-bottom:1px solid var(--border);flex-shrink:0;z-index:2;}
+.pdf-viewer-toolbar button{background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-size:11px;cursor:pointer;padding:2px 7px;font-family:var(--font-mono);transition:all .12s;}
+.pdf-viewer-toolbar button:hover{border-color:var(--accent);color:var(--accent);}
+.pdf-viewer-toolbar .pg-info{font-family:var(--font-mono);font-size:10px;color:var(--text2);margin:0 4px;}
+.pdf-viewer-canvas-wrap{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;background:#2a2a3e;min-height:0;}
+.pdf-viewer-canvas-wrap canvas{display:block;max-width:100%;height:auto;}
+.pdf-viewer-drag{position:absolute;top:0;left:0;right:0;height:28px;cursor:move;z-index:3;}
+
+
+/* ── FRAMES ── */
+/* Frames are drawn on canvas — no DOM CSS needed beyond toolbar */
+
+/* ── PRESENTER MODE ── */
+#present-bar{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  background:rgba(13,15,20,.96);border:1px solid var(--border2);border-radius:12px;
+  display:none;align-items:center;gap:10px;padding:8px 16px;z-index:900;
+  box-shadow:0 8px 32px rgba(0,0,0,.7);backdrop-filter:blur(8px);user-select:none;}
+#present-bar.visible{display:flex;}
+.pb-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border2);
+  background:var(--surface2);color:var(--text);font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .14s;flex-shrink:0;}
+.pb-btn:hover{border-color:var(--accent);color:var(--accent);}
+.pb-btn.exit{border-color:var(--danger);color:var(--danger);}
+.pb-btn.exit:hover{background:rgba(224,82,82,.15);}
+#pb-counter{font-family:var(--font-mono);font-size:12px;color:var(--text2);min-width:56px;text-align:center;}
+#pb-title{font-family:var(--font-mono);font-size:11px;color:var(--accent);
+  max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* Speaker note card */
+#present-note{position:fixed;bottom:90px;left:24px;max-width:340px;
+  background:rgba(13,15,20,.92);border:1px solid var(--border2);border-radius:10px;
+  padding:14px 18px;z-index:899;display:none;backdrop-filter:blur(8px);
+  box-shadow:0 4px 24px rgba(0,0,0,.6);}
+#present-note.visible{display:block;}
+#present-note h4{font-family:var(--font-mono);font-size:11px;color:var(--accent);
+  margin-bottom:7px;letter-spacing:.05em;}
+#present-note p{font-size:12px;color:var(--text2);line-height:1.65;font-family:var(--font-sans);}
+
+/* Waypoint pins on canvas (DOM overlay) */
+.wp-pin{position:absolute;width:22px;height:22px;border-radius:50%;
+  background:var(--accent);color:#000;font-family:var(--font-mono);font-size:10px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:30;transform:translate(-50%,-50%);
+  box-shadow:0 2px 8px rgba(0,0,0,.5);transition:transform .1s;}
+.wp-pin:hover{transform:translate(-50%,-50%) scale(1.2);}
+.wp-pin.active{background:#fff;border:2px solid var(--accent);}
+
+/* Waypoints modal */
+#wp-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:800;
+  display:none;align-items:center;justify-content:center;}
+#wp-modal.visible{display:flex;}
+#wp-modal .modal-box{width:520px;max-height:70vh;display:flex;flex-direction:column;}
+#wp-list{overflow-y:auto;flex:1;margin:10px 0;}
+.wp-row{display:flex;align-items:center;gap:8px;padding:7px 10px;
+  border:1px solid var(--border);border-radius:6px;margin-bottom:6px;
+  background:var(--surface2);cursor:pointer;transition:border-color .12s;}
+.wp-row:hover{border-color:var(--accent);}
+.wp-row .wp-num{width:22px;height:22px;border-radius:50%;background:var(--accent);
+  color:#000;font-family:var(--font-mono);font-size:10px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.wp-row .wp-info{flex:1;}
+.wp-row .wp-name{font-family:var(--font-mono);font-size:11px;color:var(--text);}
+.wp-row .wp-note-prev{font-size:10px;color:var(--text3);margin-top:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px;}
+.wp-row .wp-del{background:none;border:none;color:var(--danger);cursor:pointer;
+  font-size:14px;padding:2px 6px;opacity:.6;}
+.wp-row .wp-del:hover{opacity:1;}
+
+/* Waypoint edit sub-form */
+#wp-edit-form{padding:10px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:6px;margin-top:8px;display:none;}
+#wp-edit-form.visible{display:block;}
+#wp-edit-form input,#wp-edit-form textarea{width:100%;background:var(--surface);
+  border:1px solid var(--border);border-radius:4px;color:var(--text);
+  font-family:var(--font-mono);font-size:11px;padding:6px 8px;outline:none;margin-top:4px;}
+#wp-edit-form textarea{min-height:60px;resize:vertical;}
+#wp-edit-form input:focus,#wp-edit-form textarea:focus{border-color:var(--accent);}
+#wp-edit-form label{font-family:var(--font-mono);font-size:10px;color:var(--text3);}
+
+/* Spotlight overlay */
+#spotlight-overlay{position:fixed;inset:0;pointer-events:none;z-index:50;display:none;}
+#spotlight-overlay.visible{display:block;}
+
+/* Edge label inline editor */
+#edge-label-input{position:fixed;background:var(--surface);border:1px solid var(--accent);
+  border-radius:4px;color:var(--text);font-family:var(--font-mono);font-size:11px;
+  padding:3px 7px;outline:none;z-index:500;display:none;min-width:80px;}
+#edge-label-input.visible{display:block;}
+
+
+<!-- PDF.js for PDF import -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>if(typeof pdfjsLib!=='undefined')pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+</head>
+<body>
+
+<div id="cursor-dot"></div>
+
+<!-- TOOLBAR -->
+<div id="toolbar">
+  <span id="app-title">INVESTIG8R</span>
+  <div class="tb-sep"></div>
+
+  <!-- ADD group -->
+  <div class="tb-group">
+    <button class="tb-overflow-btn" id="addGroupBtn" title="Add content">
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      Add
+      <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor" style="margin-left:1px"><path d="M1 2l3 3 3-3"/></svg>
+    </button>
+    <div class="tb-dropdown" id="addGroupMenu">
+      <label class="tb-file-label" title="Add image/video/audio">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="3" width="12" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4 7l2-2 2 2 2-3" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+        Media
+        <input type="file" id="fileInput" accept="image/*,video/*,audio/*">
+      </label>
+      <label class="tb-file-label" title="Import PDF">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="1" width="8" height="12" rx="1"/><path d="M6 1v4h4"/><path d="M4 8h4M4 10h3"/></svg>
+        PDF
+        <input type="file" id="pdfInput" accept=".pdf,application/pdf">
+      </label>
+      <button class="tb-btn" id="addUrlBtn" title="Embed website">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="7" cy="7" r="5.5"/><path d="M7 1.5c-1.5 2-1.5 9 0 11M7 1.5c1.5 2 1.5 9 0 11M1.5 7h11"/></svg>
+        URL Embed
+      </button>
+      <button class="tb-btn" id="addTextBtn" title="Add text (T)">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor"><path d="M2 2h10v2H9v8H5V4H2z"/></svg>
+        Text Node
+      </button>
+    </div>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <!-- TOOLS group -->
+  <button class="tb-btn" id="selectBtn" title="Select (V)">
+    <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l9 5.5-5 1L5 13z"/></svg>
+    Select
+  </button>
+  <button class="tb-btn" id="addLineBtn" title="Draw edge (L)">
+    <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor"><line x1="2" y1="12" x2="12" y2="2" stroke="currentColor" stroke-width="1.6"/></svg>
+    Edge
+  </button>
+  <button class="tb-btn" id="addFrameBtn" title="Draw frame (F)">
+    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="12" height="12" rx="2"/><line x1="1" y1="4" x2="13" y2="4"/></svg>
+    Frame
+  </button>
+  <button class="tb-btn" id="addWaypointBtn" title="Drop waypoint (W)">
+    <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor"><circle cx="7" cy="5.5" r="3" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5.5" r="1.2"/><path d="M7 8.5c0 0-4 3-4 0" fill="none" stroke="currentColor" stroke-width="1.2"/><line x1="7" y1="8.5" x2="7" y2="13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    Pin
+  </button>
+
+  <div class="tb-sep"></div>
+
+  <!-- STYLE group -->
+  <div class="tb-group">
+    <button class="tb-overflow-btn" id="styleGroupBtn" title="Visual style options">
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="6" cy="6" r="0.8"/></svg>
+      Style
+      <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor" style="margin-left:1px"><path d="M1 2l3 3 3-3"/></svg>
+    </button>
+    <div class="tb-dropdown" id="styleGroupMenu">
+      <div style="display:flex;align-items:center;gap:7px;padding:3px 4px">
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);min-width:38px">Node</span>
+        <div class="tb-color-wrap"><input type="color" id="nodeColor" value="#e8c547"></div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);min-width:32px">Edge</span>
+        <div class="tb-color-wrap"><input type="color" id="edgeColor" value="#f07a3a"></div>
+      </div>
+      <div class="tb-sep"></div>
+      <div class="tb-range-group" style="padding:3px 4px">
+        <label>Opacity</label>
+        <input type="range" class="tb-range" id="opacityRange" min="0" max="1" step="0.05" value="1">
+        <span class="tb-range-val" id="opacityVal">1.0</span>
+      </div>
+      <div class="tb-sep"></div>
+      <select class="tb-select" id="lineStyleSel"><option value="solid">Solid line</option><option value="dashed">Dashed</option><option value="dotted">Dotted</option></select>
+      <select class="tb-select" id="arrowStyleSel" style="margin-top:4px"><option value="none">No arrow</option><option value="open">Open arrow</option><option value="filled" selected>Filled arrow</option><option value="double">Double arrow</option></select>
+    </div>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <!-- ZOOM group -->
+  <div class="tb-group">
+    <button class="tb-overflow-btn" id="zoomGroupBtn" title="Zoom options">
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="5" cy="5" r="3.5"/><line x1="7.5" y1="7.5" x2="11" y2="11"/><line x1="3.5" y1="5" x2="6.5" y2="5"/><line x1="5" y1="3.5" x2="5" y2="6.5"/></svg>
+      Zoom
+      <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor" style="margin-left:1px"><path d="M1 2l3 3 3-3"/></svg>
+    </button>
+    <div class="tb-dropdown" id="zoomGroupMenu">
+      <button class="tb-btn" id="fitBtn" title="Fit all nodes (Ctrl+F)">Fit All  <span style="color:var(--text3);font-size:9px">Ctrl+F</span></button>
+      <button class="tb-btn" id="fitSelBtn" title="Fit selected nodes">Fit Selection</button>
+      <button class="tb-btn" id="zoomResetBtn" title="Reset zoom (Ctrl+0)">Reset  <span style="color:var(--text3);font-size:9px">Ctrl+0</span></button>
+      <button class="tb-btn" id="zoomInBtn" title="Zoom in">Zoom In  <span style="color:var(--text3);font-size:9px">Ctrl++</span></button>
+      <button class="tb-btn" id="zoomOutBtn" title="Zoom out">Zoom Out  <span style="color:var(--text3);font-size:9px">Ctrl+-</span></button>
+    </div>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <!-- HISTORY group -->
+  <button class="tb-btn" id="undoBtn" title="Undo (Ctrl+Z)">&#8630; Undo</button>
+  <button class="tb-btn" id="redoBtn" title="Redo (Ctrl+Y)">Redo &#8631;</button>
+  <button class="tb-btn danger" id="deleteBtn" title="Delete (Del)">&#x2715;</button>
+
+  <div class="tb-sep"></div>
+
+  <!-- VIEW group -->
+  <button class="tb-btn" id="presentBtn" title="Presentation mode (Shift+P)">&#9658; Present</button>
+  <button class="tb-btn" id="wpManagerBtn" title="Manage waypoints">Waypoints</button>
+
+  <div class="tb-sep"></div>
+
+  <!-- FILE group -->
+  <div class="tb-group">
+    <button class="tb-overflow-btn" id="fileGroupBtn" title="File operations">
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1" y="1" width="8" height="10" rx="1"/><path d="M5 1v3h4"/><path d="M3 7h5M3 9h3"/></svg>
+      File
+      <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor" style="margin-left:1px"><path d="M1 2l3 3 3-3"/></svg>
+    </button>
+    <div class="tb-dropdown" id="fileGroupMenu" style="left:auto;right:0">
+      <button class="tb-btn" id="saveBtn" title="Save board (Ctrl+S)">Save Board</button>
+      <button class="tb-btn" id="loadBtn" title="Load saved board">Load Board</button>
+      <button class="tb-btn" id="templatesBtn" title="Templates">Templates</button>
+      <div class="tb-sep"></div>
+      <select class="tb-select" id="exportFmt"><option value="png">Export PNG</option><option value="json">Export JSON</option><option value="jizz">Export .jizz</option><option value="html">Export .html (standalone)</option></select>
+      <button class="tb-btn" id="exportBtn" style="margin-top:4px">Export</button>
+      <div class="tb-sep"></div>
+      <label class="tb-file-label" title="Open a .jizz board file" style="border-color:var(--accent);color:var(--accent)">Open .jizz<input type="file" id="openJizzInput" accept=".jizz"></label>
+    </div>
+  </div>
+
+  <button class="tb-btn" id="helpBtn" title="Keyboard shortcuts (?)">?</button>
+</div>
+
+<!-- WORKSPACE -->
+<div id="workspace">
+  <canvas id="main-canvas"></canvas>
+  <button id="panel-toggle" title="Toggle panel (P)">▶</button>
+  <div id="side-panel">
+    <div class="panel-section">
+      <div class="panel-hdr">Layers <button id="addLayerBtn">+</button></div>
+      <div id="layers-list"></div>
+    </div>
+    <div class="panel-section">
+      <div class="panel-hdr">Properties</div>
+    </div>
+    <div id="props-inner"></div>
+  </div>
+  <canvas id="minimap" width="160" height="110"></canvas>
+  <div id="media-bar">
+    <span class="mb-label" id="mb-label">—</span>
+    <button id="mb-pp">&#9654;</button>
+    <span style="color:var(--text3)">VOL</span>
+    <input type="range" id="media-vol" min="0" max="1" step="0.05" value="1">
+    <span style="color:var(--text3)">SPD</span>
+    <input type="range" id="media-spd" min="0.25" max="3" step="0.25" value="1">
+    <span id="media-spdval">1x</span>
+    <button id="mb-close">x</button>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div id="status-bar">
+  <span>ZOOM <span id="st-zoom">100%</span></span>
+  <span>X <span id="st-x">0</span></span>
+  <span>Y <span id="st-y">0</span></span>
+  <span>NODES <span id="st-nodes">0</span></span>
+  <span>LAYER <span id="st-layer">Layer 1</span></span>
+  <span>SNAP <span id="st-snap">OFF</span></span>
+  <span id="st-mode">SELECT</span>
+</div>
+
+<!-- CONTEXT MENU -->
+<div id="ctx-menu">
+  <div class="ctx-item" data-action="front">Bring to Front <span class="ctx-kbd">]</span></div>
+  <div class="ctx-item" data-action="back">Send to Back <span class="ctx-kbd">[</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" id="ctx-edit-text" data-action="edit-text">Edit Text <span class="ctx-kbd">F2</span></div>
+  <div class="ctx-item" data-action="edit-label">Edit Label</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" data-action="add-waypoint">Add as Waypoint</div>
+  <div class="ctx-item" data-action="save-template">Save Board as Template…</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" data-action="duplicate">Duplicate <span class="ctx-kbd">Ctrl+D</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item danger" data-action="delete">Delete <span class="ctx-kbd">Del</span></div>
+</div>
+
+<!-- TEXT EDITOR MODAL -->
+<div class="modal-overlay" id="text-editor-overlay">
+  <div class="modal-box">
+    <div class="modal-title" id="text-editor-title">ADD TEXT</div>
+    <label id="text-editor-label">CONTENT</label>
+    <textarea id="text-editor-input" rows="3" spellcheck="false"></textarea>
+    <div class="text-font-row">
+      <label>Font</label>
+      <select id="text-font-sel">
+        <option value="IBM Plex Mono">IBM Plex Mono</option>
+        <option value="IBM Plex Sans">IBM Plex Sans</option>
+        <option value="Space Mono">Space Mono</option>
+        <option value="Crimson Pro">Crimson Pro</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Arial">Arial</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Impact">Impact</option>
+      </select>
+      <label>Size</label>
+      <select id="text-size-sel">
+        <option value="10">10</option><option value="12">12</option><option value="13" selected>13</option><option value="14">14</option>
+        <option value="16">16</option><option value="20">20</option><option value="24">24</option>
+        <option value="32">32</option><option value="48">48</option>
+      </select>
+    </div>
+    <div id="text-font-preview">Preview text here</div>
+    <div class="modal-btns">
+      <button id="text-editor-cancel">Cancel</button>
+      <button class="primary" id="text-editor-ok">Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- KBD HELP -->
+<div class="modal-overlay" id="kbd-help">
+  <div class="modal-box">
+    <div class="modal-title">// KEYBOARD SHORTCUTS</div>
+    <div class="kbd-grid">
+      <div class="kbd-row"><span class="kbd-desc">Select</span><span class="kbd-key">V</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Draw edge</span><span class="kbd-key">L</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Add text</span><span class="kbd-key">T</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Draw frame</span><span class="kbd-key">F</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Pin waypoint</span><span class="kbd-key">W</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Delete</span><span class="kbd-key">Del</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Undo</span><span class="kbd-key">Ctrl+Z</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Redo</span><span class="kbd-key">Ctrl+Y</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Save</span><span class="kbd-key">Ctrl+S</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Duplicate</span><span class="kbd-key">Ctrl+D</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Select all</span><span class="kbd-key">Ctrl+A</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Bring forward</span><span class="kbd-key">]</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Send back</span><span class="kbd-key">[</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Snap grid</span><span class="kbd-key">G</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Zoom in/out</span><span class="kbd-key">Ctrl +/-</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Fit all nodes</span><span class="kbd-key">Ctrl+F</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Fit selection</span><span class="kbd-key">Ctrl+Shift+F</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Reset view</span><span class="kbd-key">Ctrl+0</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Edit text</span><span class="kbd-key">F2</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Pan canvas</span><span class="kbd-key">Space+drag</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Cancel</span><span class="kbd-key">Esc</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Present mode</span><span class="kbd-key">Shift+P</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Next waypoint</span><span class="kbd-key">→</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Prev waypoint</span><span class="kbd-key">←</span></div>
+      <div class="kbd-row"><span class="kbd-desc">This help</span><span class="kbd-key">?</span></div>
+      <div class="kbd-row"><span class="kbd-desc">Toggle panel</span><span class="kbd-key">P</span></div>
+    </div>
+    <div class="modal-btns"><button class="primary" id="kbd-close">Close</button></div>
+  </div>
+</div>
+
+<!-- TUTORIAL OVERLAY -->
+<div id="tutorial-overlay">
+  <div id="tut-card">
+    <button id="tut-skip">Skip intro</button>
+    <div id="tut-art">
+      <canvas id="tut-canvas" width="520" height="200"></canvas>
+    </div>
+    <div id="tut-body">
+      <div id="tut-step-indicator"></div>
+      <div id="tut-title"></div>
+      <div id="tut-desc"></div>
+      <div id="tut-hint"></div>
+      <div id="tut-nav">
+        <span id="tut-progress"></span>
+        <button id="tut-prev">Back</button>
+        <button class="primary" id="tut-next">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- PRESENTER BAR -->
+<div id="present-bar">
+  <button class="pb-btn" id="pb-prev" title="Previous (←)">◀</button>
+  <span id="pb-counter">1 / 1</span>
+  <button class="pb-btn" id="pb-next" title="Next (→)">▶</button>
+  <div style="width:1px;height:20px;background:var(--border);margin:0 4px"></div>
+  <span id="pb-title">—</span>
+  <div style="width:1px;height:20px;background:var(--border);margin:0 4px"></div>
+  <button class="pb-btn" id="pb-spotlight" title="Toggle spotlight" style="font-size:11px;">SPOT</button>
+  <button class="pb-btn exit" id="pb-exit" title="Exit presentation (Esc)">x</button>
+</div>
+
+<!-- SPEAKER NOTE -->
+<div id="present-note">
+  <h4 id="pn-title">NOTE</h4>
+  <p id="pn-text"></p>
+</div>
+
+<!-- SPOTLIGHT OVERLAY (canvas element for vignette) -->
+<canvas id="spotlight-overlay"></canvas>
+
+<!-- EDGE LABEL INLINE INPUT -->
+<input id="edge-label-input" type="text" placeholder="Label…" maxlength="80">
+
+<!-- WAYPOINTS MANAGER MODAL -->
+<div id="wp-modal">
+  <div class="modal-box">
+    <div class="modal-title">WAYPOINTS — PRESENTATION TOUR</div>
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-bottom:8px;">
+      Click on the canvas (in waypoint mode) to drop a pin. Drag to reorder. Double-click a row to edit title &amp; notes.
+    </div>
+    <div id="wp-list"></div>
+    <div id="wp-edit-form">
+      <label>Title</label>
+      <input id="wp-edit-title" type="text" placeholder="Slide title…">
+      <label style="margin-top:8px;display:block;">Speaker note</label>
+      <textarea id="wp-edit-note" placeholder="Notes visible during presentation…"></textarea>
+      <div class="modal-btns" style="margin-top:8px;">
+        <button id="wp-edit-cancel">Cancel</button>
+        <button class="primary" id="wp-edit-save">Save</button>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button id="wp-close">Close</button>
+      <button class="primary" id="wp-record-btn">+ Add Waypoint at Current View</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<!-- INLINE RENAME MODAL (replaces all prompt() calls) -->
+<div class="modal-overlay" id="rename-modal">
+  <div class="modal-box" style="width:340px;">
+    <div class="modal-title" id="rename-modal-title">RENAME</div>
+    <input type="text" id="rename-modal-input" class="prop-input" style="width:100%;margin-top:8px;padding:8px 10px;font-size:13px;" autocomplete="off" spellcheck="false">
+    <div class="modal-btns" style="margin-top:12px;">
+      <button id="rename-modal-cancel">Cancel</button>
+      <button class="primary" id="rename-modal-ok">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- TEMPLATE MODAL -->
+<div id="template-modal">
+  <div class="modal-box">
+    <div class="modal-title">BOARD TEMPLATES</div>
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-bottom:8px;">
+      Load a template to start a new board layout. Built-in templates are marked in blue. Save your current board as a template to reuse it later or share it.
+    </div>
+
+    <!-- Save current board as template -->
+    <div class="tpl-section-hdr">
+      <span>Save Current Board as Template</span>
+    </div>
+    <input id="tpl-save-name" type="text" placeholder="Template name…" maxlength="48" spellcheck="false">
+    <textarea id="tpl-save-desc" placeholder="Short description (optional)…" maxlength="120"></textarea>
+    <div style="display:flex;gap:7px;margin-top:7px;">
+      <button class="tb-btn primary" id="tplSaveBtn" style="background:var(--accent);color:#000;font-weight:700;border-color:var(--accent);flex:1">Save as Template</button>
+      <button class="tb-btn" id="tplExportBtn" title="Export selected template as .tpl.json">Export .json</button>
+      <label class="tb-file-label" title="Import a .tpl.json template file">Import .json<input type="file" id="tplImportInput" accept=".json,.tpl.json"></label>
+    </div>
+
+    <div class="tpl-section-hdr" style="margin-top:14px;">
+      <span>Available Templates</span>
+      <span id="tpl-count" style="font-size:9px;color:var(--text3)"></span>
+    </div>
+    <div id="template-list"></div>
+
+    <div class="modal-btns">
+      <button id="tpl-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- PDF Import Modal -->
+<div id="pdf-modal">
+  <div class="modal-box">
+    <div class="modal-title">IMPORT PDF</div>
+    <div style="padding:10px 0 6px;font-family:var(--font-mono);font-size:10px;color:var(--text3)" id="pdf-modal-info">Loading pages…</div>
+    <div id="pdf-preview-strip"></div>
+    <div style="padding:10px 0 4px;font-family:var(--font-mono);font-size:10px;font-weight:700;color:var(--text2)">IMPORT MODE</div>
+    <div id="pdf-import-opts">
+      <button class="pdf-opt-btn active" data-mode="viewer">Live PDF Viewer</button>
+      <button class="pdf-opt-btn" data-mode="selected">Selected Pages as Images</button>
+      <button class="pdf-opt-btn" data-mode="range">Page Range as Images</button>
+      <button class="pdf-opt-btn" data-mode="all">All Pages as Images</button>
+    </div>
+    <div id="pdf-page-range-row" style="display:none">
+      Pages <input type="number" id="pdf-range-from" min="1" value="1"> to <input type="number" id="pdf-range-to" min="1" value="1">
+    </div>
+    <div id="pdf-viewer-info">
+      <b style="color:var(--accent)">Live PDF Viewer</b> embeds an interactive viewer node on the canvas.<br>
+      Use prev/next buttons to flip pages. Click to select and move it.
+    </div>
+    <div class="modal-btns" style="margin-top:14px">
+      <button id="pdf-cancel">Cancel</button>
+      <button class="primary" id="pdf-ok">Add to Board</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- URL / Website Embed Modal -->
+<div id="url-modal">
+  <div class="modal-box">
+    <div class="modal-title">EMBED WEBSITE OR URL</div>
+    <input type="url" id="url-input" placeholder="https://example.com" autocomplete="off" spellcheck="false">
+    <div class="url-presets">
+      <button class="url-preset-btn" data-url="https://www.openstreetmap.org/export/embed.html?bbox=-0.1,51.4,-0.05,51.55&amp;layer=mapnik">OpenStreetMap</button>
+      <button class="url-preset-btn" data-url="https://www.wikipedia.org">Wikipedia</button>
+      <button class="url-preset-btn" data-url="https://time.is">World Clock</button>
+      <button class="url-preset-btn" data-url="https://www.bbc.com/news">BBC News</button>
+    </div>
+    <div id="pdf-progress"></div>
+    <div class="modal-btns" style="margin-top:14px">
+      <button id="url-cancel">Cancel</button>
+      <button class="primary" id="url-ok">Embed</button>
+    </div>
+  </div>
+</div>
+
