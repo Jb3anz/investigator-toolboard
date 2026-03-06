@@ -5,10 +5,10 @@
 Drag & drop images/videos/audio/PDFs, connect nodes, group into frames, drop waypoints, and present with animated camera moves + spotlight focus.
 
 #Osint
-<img width="1915" height="879" alt="image" src="https://github.com/user-attachments/assets/b38435fe-eb22-46fa-b4c2-494b3e5c806d" />
+<img width="1915" height="879" alt="image" src="https://i.ibb.co/8RWQFFv/Untitled.png" />
 
 #Mind mapping and planing
-<img width="1920" height="880" alt="image" src="https://github.com/user-attachments/assets/f2dc2884-9e44-4b11-94e0-df4f80188329" />
+<img width="1915" height="879" alt="image" src="https://i.ibb.co/LhP35zCQ/Screenshot-2026-03-06-023621.png" />
 
 
 100% offline – no server, no account, data saved via IndexedDB.
