@@ -31,6 +31,8 @@ Just double-click `index.html` (or open in any browser).
 3. Press **?** for shortcuts
 4. Ctrl+S to save board
 
+**[Live Demo](https://jb3anz.github.io/investigator-toolboard/)** — open directly in browser, no download needed!
+
 ## Third-party credits
 - PDF.js (Mozilla) – Apache 2.0 – https://github.com/mozilla/pdf.js
 - Fonts: IBM Plex, Crimson Pro, Space Mono (Google Fonts / Open Font License)
